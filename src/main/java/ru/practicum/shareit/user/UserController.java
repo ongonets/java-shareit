@@ -27,21 +27,27 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public User findUser(@PathVariable long userId) {
-        log.info("Request to search user with ID = {}",userId);
+        log.info("Request to search user with ID = {}", userId);
         return userService.findUserById(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@RequestBody User user) {
-        log.info("Request to create user  {}",user);
+        log.info("Request to create user  {}", user);
         return userService.createUser(user);
     }
 
-    @PutMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public User updateUser(@PathVariable long userId, @RequestBody User user) {
-        log.info("Request to update user with ID = {}",userId);
-        return userService.updateUser(user);
+        log.info("Request to update user with ID = {}", userId);
+        return userService.updateUser(userId, user);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable long userId) {
+        log.info("Request to delete user with ID = {}", userId);
+        userService.deleteUser(userId);
     }
 
 }

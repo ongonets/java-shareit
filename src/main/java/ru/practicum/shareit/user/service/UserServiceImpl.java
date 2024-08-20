@@ -38,28 +38,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(User user) {
-        findUserById(user.getId());
-        return userStorage.updateUser(user);
+    public User updateUser(long userId, User user) {
+        User oldUser = findUserById(userId);
+        if (user.getEmail() != null) {
+            validateEmail(user);
+            oldUser.setEmail(user.getEmail());
+        }
+        if (user.getName() != null) {
+            oldUser.setName(user.getName());
+        }
+        return userStorage.updateUser(oldUser);
     }
 
     @Override
-    public void deleteUSer(long userId) {
-        userStorage.deleteUSer(userId);
+    public void deleteUser(long userId) {
+        userStorage.deleteUser(userId);
     }
 
     private void validateEmail(User user) {
         String email = user.getEmail();
-        if (email.isEmpty() || !(email.matches("^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$"))) {
+        if (email == null || !(email.matches("^((?!\\.)[\\w\\-_.]*[^.])(@\\w+)(\\.\\w+(\\.\\w+)?[^.\\W])$"))) {
             log.error("Email was entered incorrectly by user {}", user);
             throw new ValidationException("Email was entered incorrectly");
         }
         userStorage.findAllUser().stream()
-                .map(user1 -> user1.getEmail().equals(email))
+                .filter(user1 -> user1.getEmail().equals(email))
                 .findFirst()
                 .ifPresent(user1 -> {
-                    log.error("Email was entered incorrectly by user {}", user);
-                    throw new DuplicateDataException("Email was entered incorrectly");
+                    log.error("Email was duplicate by user {}", user);
+                    throw new DuplicateDataException("Email was duplicate");
                 });
     }
 }
