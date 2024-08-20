@@ -15,7 +15,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Override
     public Collection<User> findAllUser() {
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     private void validateEmail(User user) {
         String email = user.getEmail();
-        if (!(email.matches("^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$"))) {
+        if (email.isEmpty() || !(email.matches("^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$"))) {
             log.error("Email was entered incorrectly by user {}", user);
             throw new ValidationException("Email was entered incorrectly");
         }
