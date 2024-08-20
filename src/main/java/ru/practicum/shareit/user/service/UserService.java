@@ -1,14 +1,13 @@
-package ru.practicum.shareit.user.dal;
+package ru.practicum.shareit.user.service;
 
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
-import java.util.Optional;
 
-public interface UserStorage {
+public interface UserService {
     Collection<User> findAllUser();
 
-    Optional<User> findUserById(long userId);
+    User findUserById(long userId);
 
     User createUser(User user);
 
