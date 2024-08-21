@@ -24,4 +24,10 @@ public class ErrorHandler {
     public ErrorResponse handleDuplicateData(final DuplicateDataException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleConditionsNotMet(final ConditionsNotMetException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
