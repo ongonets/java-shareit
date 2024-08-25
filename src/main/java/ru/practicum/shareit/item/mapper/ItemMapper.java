@@ -1,20 +1,18 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.model.Item;
 
-import java.time.Instant;
 
 @NoArgsConstructor
 public final class ItemMapper {
 
-        public static Item mapToItem(ItemDto itemDto) {
+        public static Item mapToItem(NewItemRequest newItemRequest) {
             Item item = new Item();
-            item.setName(itemDto.getName());
-            item.setDescription(itemDto.getDescription());
-            item.setAvailable(itemDto.getAvailable());
+            item.setName(newItemRequest.getName());
+            item.setDescription(newItemRequest.getDescription());
+            item.setAvailable(newItemRequest.getAvailable());
             return item;
         }
 }

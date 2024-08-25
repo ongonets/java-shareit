@@ -1,14 +1,12 @@
 package ru.practicum.shareit.item.dto;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
  * TODO Sprint add-controllers.
  */
 @Data
-public class ItemDto {
+public class NewItemRequest {
     String name;
     String description;
     Boolean available;

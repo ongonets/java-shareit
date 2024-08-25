@@ -7,7 +7,7 @@ import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dal.ItemStorage;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dal.UserStorage;
@@ -24,7 +24,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<Item> findByText(String text) {
-        if(text.isEmpty() || text.isBlank()) {
+        if (text.isEmpty() || text.isBlank()) {
             return new ArrayList<>();
         }
         return itemStorage.findByText(text);
@@ -46,25 +46,25 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item createItem(long userId, ItemDto itemDto) {
+    public Item createItem(long userId, NewItemRequest newItemRequest) {
         findUser(userId);
-        validateItem(itemDto);
-        Item item = ItemMapper.mapToItem(itemDto);
+        validateItem(newItemRequest);
+        Item item = ItemMapper.mapToItem(newItemRequest);
         item.setOwnerId(userId);
         return itemStorage.createItem(item);
     }
 
     @Override
-    public Item updateItem(long userId, long itemId, ItemDto itemDto) {
+    public Item updateItem(long userId, long itemId, NewItemRequest newItemRequest) {
         Item oldItem = checkItemOwner(userId, itemId);
-        if (itemDto.hasName()) {
-            oldItem.setName(itemDto.getName());
+        if (newItemRequest.hasName()) {
+            oldItem.setName(newItemRequest.getName());
         }
-        if (itemDto.hasDescription()) {
-            oldItem.setDescription(itemDto.getDescription());
+        if (newItemRequest.hasDescription()) {
+            oldItem.setDescription(newItemRequest.getDescription());
         }
-        if(itemDto.hasAvailable()) {
-            oldItem.setAvailable(itemDto.getAvailable());
+        if (newItemRequest.hasAvailable()) {
+            oldItem.setAvailable(newItemRequest.getAvailable());
         }
         return itemStorage.updateItem(oldItem);
     }
@@ -88,12 +88,12 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwnerId() != userId) {
             log.error("User with ID = {} does not own item with ID = {}", userId, itemId);
             throw new ConditionsNotMetException(
-                    String.format("User with ID = %d does not own item with ID = %d", userId,itemId));
+                    String.format("User with ID = %d does not own item with ID = %d", userId, itemId));
         }
         return item;
     }
 
-    private void validateItem(ItemDto item) {
+    private void validateItem(NewItemRequest item) {
         if (item.getName() == null || item.getName().isBlank()) {
             log.error("Name was entered incorrectly by item {}", item);
             throw new ValidationException("Name was entered incorrectly");
@@ -102,7 +102,7 @@ public class ItemServiceImpl implements ItemService {
             log.error("Description was entered incorrectly by item {}", item);
             throw new ValidationException("Description was entered incorrectly");
         }
-        if(item.getAvailable() == null) {
+        if (item.getAvailable() == null) {
             log.error("Available was entered incorrectly by item {}", item);
             throw new ValidationException("Available was entered incorrectly");
         }
