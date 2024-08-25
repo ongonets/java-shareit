@@ -17,9 +17,11 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Collection<Item> findByText(String text) {
+    public Collection<Item> findByText(String searchText) {
+        String text = searchText.toLowerCase();
         return items.values().stream()
-                .filter(item -> (item.getName().contains(text) || item.getDescription().contains(text)))
+                .filter(item -> (item.getName().toLowerCase().contains(text) ||
+                        item.getDescription().toLowerCase().contains(text)))
                 .filter(Item::isAvailable)
                 .toList();
     }

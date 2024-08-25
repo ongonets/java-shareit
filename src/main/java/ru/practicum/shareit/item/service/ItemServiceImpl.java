@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dal.UserStorage;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Service
@@ -23,6 +24,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<Item> findByText(String text) {
+        if(text.isEmpty() || text.isBlank()) {
+            return new ArrayList<>();
+        }
         return itemStorage.findByText(text);
     }
 
