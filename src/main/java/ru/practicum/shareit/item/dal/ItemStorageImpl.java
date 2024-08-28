@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public class ItemStorageImpl implements ItemStorage {
-    Map<Long, Item> items;
+    private final Map<Long, Item> items;
 
     public ItemStorageImpl() {
         items = new HashMap<>();

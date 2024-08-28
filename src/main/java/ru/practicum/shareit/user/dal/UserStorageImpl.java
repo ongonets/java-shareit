@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Component
 public class UserStorageImpl implements UserStorage {
-    Map<Long, User> users;
+    private final Map<Long, User> users;
 
     public UserStorageImpl() {
         users = new HashMap<>();
