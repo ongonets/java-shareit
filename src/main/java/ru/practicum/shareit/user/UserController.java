@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.NewUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -34,9 +35,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestBody User user) {
-        log.info("Request to create user  {}", user);
-        return userService.createUser(user);
+    public UserDto createUser(@RequestBody NewUserRequest newUserRequest) {
+        log.info("Request to create user  {}", newUserRequest);
+        return userService.createUser(newUserRequest);
     }
 
     @PatchMapping("/{userId}")
