@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateDataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dal.UserStorage;
 
@@ -18,28 +20,26 @@ public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
     @Override
-    public Collection<User> findAllUser() {
-        return userStorage.findAllUser();
+    public Collection<UserDto> findAllUser() {
+        return userStorage.findAllUser().stream()
+                .map(UserMapper::mapToDto)
+                .toList();
     }
 
     @Override
-    public User findUserById(long userId) {
-        return userStorage.findUserById(userId)
-                .orElseThrow(() -> {
-                    log.error("Not found user with ID = {}", userId);
-                    return new NotFoundException(String.format("Not found user with ID = %d", userId));
-                });
+    public UserDto findUserById(long userId) {
+        return UserMapper.mapToDto(findUser(userId));
     }
 
     @Override
-    public User createUser(User user) {
+    public UserDto createUser(User user) {
         validateEmail(user);
-        return userStorage.createUser(user);
+        return UserMapper.mapToDto(userStorage.createUser(user));
     }
 
     @Override
-    public User updateUser(long userId, User user) {
-        User oldUser = findUserById(userId);
+    public UserDto updateUser(long userId, User user) {
+        User oldUser = findUser(userId);
         if (user.getEmail() != null) {
             validateEmail(user);
             oldUser.setEmail(user.getEmail());
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         if (user.getName() != null) {
             oldUser.setName(user.getName());
         }
-        return userStorage.updateUser(oldUser);
+        return UserMapper.mapToDto(userStorage.updateUser(oldUser));
     }
 
     @Override
@@ -67,6 +67,14 @@ public class UserServiceImpl implements UserService {
                 .ifPresent(user1 -> {
                     log.error("Email was duplicate by user {}", user);
                     throw new DuplicateDataException("Email was duplicate");
+                });
+    }
+
+    private User findUser(long userId) {
+        return userStorage.findUserById(userId)
+                .orElseThrow(() -> {
+                    log.error("Not found user with ID = {}", userId);
+                    return new NotFoundException(String.format("Not found user with ID = %d", userId));
                 });
     }
 }

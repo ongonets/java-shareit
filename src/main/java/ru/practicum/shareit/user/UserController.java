@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -20,26 +21,26 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public Collection<User> findAllUsers() {
+    public Collection<UserDto> findAllUsers() {
         log.info("Request to search all users");
         return userService.findAllUser();
     }
 
     @GetMapping("/{userId}")
-    public User findUser(@PathVariable long userId) {
+    public UserDto findUser(@PathVariable long userId) {
         log.info("Request to search user with ID = {}", userId);
         return userService.findUserById(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user) {
+    public UserDto createUser(@RequestBody User user) {
         log.info("Request to create user  {}", user);
         return userService.createUser(user);
     }
 
     @PatchMapping("/{userId}")
-    public User updateUser(@PathVariable long userId, @RequestBody User user) {
+    public UserDto updateUser(@PathVariable long userId, @RequestBody User user) {
         log.info("Request to update user with ID = {}", userId);
         return userService.updateUser(userId, user);
     }
