@@ -7,6 +7,7 @@ import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dal.ItemStorage;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -23,39 +24,39 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
 
     @Override
-    public Collection<Item> findByText(String text) {
+    public Collection<ItemDto> findByText(String text) {
         if (text.isEmpty() || text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemStorage.findByText(text);
+        return itemStorage.findByText(text).stream()
+                .map(ItemMapper::mapToDto)
+                .toList();
     }
 
     @Override
-    public Item findItemById(long itemId) {
-        return itemStorage.findItemById(itemId)
-                .orElseThrow(() -> {
-                    log.error("Not found item with ID = {}", itemId);
-                    return new NotFoundException(String.format("Not found item with ID = %d", itemId));
-                });
+    public ItemDto findItemById(long itemId) {
+        return ItemMapper.mapToDto(findItem(itemId));
     }
 
     @Override
-    public Collection<Item> findOwnerItems(long ownerId) {
+    public Collection<ItemDto> findOwnerItems(long ownerId) {
         findUser(ownerId);
-        return itemStorage.findOwnerItems(ownerId);
+        return itemStorage.findOwnerItems(ownerId).stream()
+                .map(ItemMapper::mapToDto)
+                .toList();
     }
 
     @Override
-    public Item createItem(long userId, NewItemRequest newItemRequest) {
+    public ItemDto createItem(long userId, NewItemRequest newItemRequest) {
         findUser(userId);
         validateItem(newItemRequest);
         Item item = ItemMapper.mapToItem(newItemRequest);
         item.setOwnerId(userId);
-        return itemStorage.createItem(item);
+        return ItemMapper.mapToDto(itemStorage.createItem(item));
     }
 
     @Override
-    public Item updateItem(long userId, long itemId, NewItemRequest newItemRequest) {
+    public ItemDto updateItem(long userId, long itemId, NewItemRequest newItemRequest) {
         Item oldItem = checkItemOwner(userId, itemId);
         if (newItemRequest.hasName()) {
             oldItem.setName(newItemRequest.getName());
@@ -66,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
         if (newItemRequest.hasAvailable()) {
             oldItem.setAvailable(newItemRequest.getAvailable());
         }
-        return itemStorage.updateItem(oldItem);
+        return ItemMapper.mapToDto(itemStorage.updateItem(oldItem));
     }
 
     @Override
@@ -84,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
 
     private Item checkItemOwner(long userId, long itemId) {
         findUser(userId);
-        Item item = findItemById(itemId);
+        Item item = findItem(itemId);
         if (item.getOwnerId() != userId) {
             log.error("User with ID = {} does not own item with ID = {}", userId, itemId);
             throw new ConditionsNotMetException(
@@ -106,5 +107,13 @@ public class ItemServiceImpl implements ItemService {
             log.error("Available was entered incorrectly by item {}", item);
             throw new ValidationException("Available was entered incorrectly");
         }
+    }
+
+    private Item findItem(long itemId) {
+        return itemStorage.findItemById(itemId)
+                .orElseThrow(() -> {
+                    log.error("Not found item with ID = {}", itemId);
+                    return new NotFoundException(String.format("Not found item with ID = %d", itemId));
+                });
     }
 }
