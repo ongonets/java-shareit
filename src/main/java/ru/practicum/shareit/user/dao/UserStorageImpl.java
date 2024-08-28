@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.dal;
+package ru.practicum.shareit.user.dao;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
