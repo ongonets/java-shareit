@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateDataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.NewUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.dao.UserStorage;
 
 import java.util.Collection;
 
@@ -18,11 +18,11 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public Collection<UserDto> findAllUser() {
-        return userStorage.findAllUser().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::mapToDto)
                 .toList();
     }
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(NewUserRequest newUserRequest) {
         User user = UserMapper.mapToUser(newUserRequest);
         validateEmail(user);
-        return UserMapper.mapToDto(userStorage.createUser(user));
+        return UserMapper.mapToDto(userRepository.save(user));
     }
 
     @Override
@@ -49,12 +49,12 @@ public class UserServiceImpl implements UserService {
         if (user.getName() != null) {
             oldUser.setName(user.getName());
         }
-        return UserMapper.mapToDto(userStorage.updateUser(oldUser));
+        return UserMapper.mapToDto(userRepository.save(oldUser));
     }
 
     @Override
     public void deleteUser(long userId) {
-        userStorage.deleteUser(userId);
+        userRepository.deleteById(userId);
     }
 
     private void validateEmail(User user) {
@@ -63,9 +63,7 @@ public class UserServiceImpl implements UserService {
             log.error("Email was entered incorrectly by user {}", user);
             throw new ValidationException("Email was entered incorrectly");
         }
-        userStorage.findAllUser().stream()
-                .filter(user1 -> user1.getEmail().equals(email))
-                .findFirst()
+        userRepository.findByEmail(email)
                 .ifPresent(user1 -> {
                     log.error("Email was duplicate by user {}", user);
                     throw new DuplicateDataException("Email was duplicate");
@@ -73,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private User findUser(long userId) {
-        return userStorage.findUserById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.error("Not found user with ID = {}", userId);
                     return new NotFoundException(String.format("Not found user with ID = %d", userId));
