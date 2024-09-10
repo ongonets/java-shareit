@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS items (
   owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   description VARCHAR(512) NOT NULL,
-  avilable BOOLEAN NOT NULL
+  available BOOLEAN NOT NULL
 );
 
 
