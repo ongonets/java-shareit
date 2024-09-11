@@ -3,15 +3,17 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dao.ItemStorage;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dao.UserStorage;
+import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,16 +21,17 @@ import java.util.Collection;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
-    private final UserStorage userStorage;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Collection<ItemDto> findByText(String text) {
         if (text.isEmpty() || text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemStorage.findByText(text).stream()
+        return itemRepository.findByText(text).stream()
                 .map(ItemMapper::mapToDto)
                 .toList();
     }
@@ -41,21 +44,23 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Collection<ItemDto> findOwnerItems(long ownerId) {
         findUser(ownerId);
-        return itemStorage.findOwnerItems(ownerId).stream()
+        return itemRepository.findAllByUserId(ownerId).stream()
                 .map(ItemMapper::mapToDto)
                 .toList();
     }
 
     @Override
+    @Transactional
     public ItemDto createItem(long userId, NewItemRequest newItemRequest) {
-        findUser(userId);
+        User user = findUser(userId);
         validateItem(newItemRequest);
         Item item = ItemMapper.mapToItem(newItemRequest);
-        item.setOwnerId(userId);
-        return ItemMapper.mapToDto(itemStorage.createItem(item));
+        item.setUser(user);
+        return ItemMapper.mapToDto(itemRepository.save(item));
     }
 
     @Override
+    @Transactional
     public ItemDto updateItem(long userId, long itemId, NewItemRequest newItemRequest) {
         Item oldItem = checkItemOwner(userId, itemId);
         if (newItemRequest.hasName()) {
@@ -67,16 +72,17 @@ public class ItemServiceImpl implements ItemService {
         if (newItemRequest.hasAvailable()) {
             oldItem.setAvailable(newItemRequest.getAvailable());
         }
-        return ItemMapper.mapToDto(itemStorage.updateItem(oldItem));
+        return ItemMapper.mapToDto(itemRepository.save(oldItem));
     }
 
     @Override
+    @Transactional
     public void deleteItem(long itemId) {
-        itemStorage.deleteItem(itemId);
+        itemRepository.deleteById(itemId);
     }
 
-    private void findUser(long userId) {
-        userStorage.findUserById(userId)
+    private User findUser(long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.error("Not found user with ID = {}", userId);
                     return new NotFoundException(String.format("Not found user with ID = %d", userId));
@@ -84,9 +90,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Item checkItemOwner(long userId, long itemId) {
-        findUser(userId);
+        User user = findUser(userId);
         Item item = findItem(itemId);
-        if (item.getOwnerId() != userId) {
+        if (item.getUser() != user) {
             log.error("User with ID = {} does not own item with ID = {}", userId, itemId);
             throw new ConditionsNotMetException(
                     String.format("User with ID = %d does not own item with ID = %d", userId, itemId));
@@ -110,7 +116,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Item findItem(long itemId) {
-        return itemStorage.findItemById(itemId)
+        return itemRepository.findById(itemId)
                 .orElseThrow(() -> {
                     log.error("Not found item with ID = {}", itemId);
                     return new NotFoundException(String.format("Not found item with ID = %d", itemId));
