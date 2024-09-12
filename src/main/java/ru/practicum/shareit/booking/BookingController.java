@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.NewBookingRequest;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.Collection;
@@ -22,9 +24,9 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto createBooking(@RequestHeader("X-Sharer-User-Id") long bookerId,
-                                    @RequestBody BookingDto bookingDto) {
-        log.info("Request to create booking  {}", bookingDto);
-        return bookingService.createBooking(bookerId, bookingDto);
+                                    @RequestBody NewBookingRequest bookingRequest) {
+        log.info("Request to create booking  {}", bookingRequest);
+        return bookingService.createBooking(bookerId, bookingRequest);
     }
 
     @PatchMapping("/{bookingId}")

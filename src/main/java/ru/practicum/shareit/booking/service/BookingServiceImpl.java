@@ -6,7 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -30,15 +35,15 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public BookingDto createBooking(long bookerId, BookingDto bookingDto) {
+    public BookingDto createBooking(long bookerId, NewBookingRequest bookingRequest) {
         User user = findUser(bookerId);
-        Item item = findItem(bookingDto.getItemId());
+        Item item = findItem(bookingRequest.getItemId());
         if (!item.isAvailable()) {
             log.error("Item is not available {}", item);
             throw new ValidationException("Item is not available.");
         }
-        validateBookingDate(bookingDto);
-        Booking booking = BookingMapper.mapToBooking(bookingDto, item, user);
+        validateBookingDate(bookingRequest);
+        Booking booking = BookingMapper.mapToBooking(bookingRequest, item, user);
         booking.setStatus(BookingStatus.WAITING);
         return BookingMapper.mapToDto(bookingRepository.save(booking));
     }
@@ -90,7 +95,7 @@ public class BookingServiceImpl implements BookingService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.error("Not found user with ID = {}", userId);
-                    return new NotFoundException(String.format("Not found user with ID = %d", userId));
+                    return new ConditionsNotMetException(String.format("Not found user with ID = %d", userId));
                 });
     }
 
@@ -110,20 +115,20 @@ public class BookingServiceImpl implements BookingService {
                 });
     }
 
-    private void validateBookingDate(BookingDto bookingDto) {
-        LocalDateTime start = bookingDto.getStart();
-        LocalDateTime end = bookingDto.getEnd();
+    private void validateBookingDate(NewBookingRequest bookingRequest) {
+        LocalDateTime start = bookingRequest.getStart();
+        LocalDateTime end = bookingRequest.getEnd();
         LocalDateTime now = LocalDateTime.now();
         if (start == null || start.isBefore(now)) {
-            log.error("Start date was entered incorrectly by booking {}", bookingDto);
+            log.error("Start date was entered incorrectly by booking {}", bookingRequest);
             throw new ValidationException("Start date was entered incorrectly.");
         }
         if (end == null || end.isBefore(now)) {
-            log.error("End date was entered incorrectly by booking {}", bookingDto);
+            log.error("End date was entered incorrectly by booking {}", bookingRequest);
             throw new ValidationException("End date was entered incorrectly.");
         }
         if (start.isEqual(end) || start.isAfter(end)) {
-            log.error("Dates  entered incorrectly by booking {}", bookingDto);
+            log.error("Dates  entered incorrectly by booking {}", bookingRequest);
             throw new ValidationException("Dates entered incorrectly.");
         }
     }
