@@ -12,7 +12,7 @@ import java.util.Objects;
  * TODO Sprint add-bookings.
  */
 @Entity
-@Table(name = "booking")
+@Table(name = "bookings")
 @Getter
 @Setter
 @ToString

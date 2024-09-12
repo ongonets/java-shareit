@@ -39,14 +39,14 @@ public class BookingController {
     public BookingDto findBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                   @PathVariable long bookingId) {
         log.info("Request to find booking with ID = {}", bookingId);
-        return bookingService.findBooking(userId,bookingId);
+        return bookingService.findUserBooking(userId,bookingId);
     }
 
     @GetMapping
     public Collection<BookingDto> findAllBookings(@RequestHeader("X-Sharer-User-Id") long userId,
                                                   @RequestParam(defaultValue = "ALL") BookingState state) {
         log.info("Request to search bookings with user ID = {}", userId);
-        return bookingService.findAllBookings(userId,state);
+        return bookingService.findBookerBookings(userId,state);
     }
 
     @GetMapping("/owner")
