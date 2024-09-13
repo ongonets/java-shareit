@@ -4,17 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingWithoutItemDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -25,6 +30,7 @@ import java.util.Collection;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public Collection<ItemDto> findByText(String text) {
@@ -42,10 +48,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> findOwnerItems(long ownerId) {
+    public Collection<ItemWithBookingDto> findOwnerItems(long ownerId) {
         findUser(ownerId);
         return itemRepository.findAllByUserId(ownerId).stream()
-                .map(ItemMapper::mapToDto)
+                .map(this::findLastANdNextBooking)
                 .toList();
     }
 
@@ -121,5 +127,15 @@ public class ItemServiceImpl implements ItemService {
                     log.error("Not found item with ID = {}", itemId);
                     return new NotFoundException(String.format("Not found item with ID = %d", itemId));
                 });
+    }
+
+    private ItemWithBookingDto findLastANdNextBooking(Item item) {
+        BookingWithoutItemDto lastBooking = bookingRepository.findLastBookings(item, LocalDateTime.now())
+                .map(BookingMapper::mapToDtoWithoutItem)
+                .orElseGet(() -> null);
+        BookingWithoutItemDto nextBooking = bookingRepository.findNextBookings(item, LocalDateTime.now())
+                .map(BookingMapper::mapToDtoWithoutItem)
+                .orElseGet(() -> null);
+        return ItemMapper.mapToDto(item, lastBooking, nextBooking);
     }
 }

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -28,7 +29,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> findOwnerItems(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public Collection<ItemWithBookingDto> findOwnerItems(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Request to search item with owner ID = {}", userId);
         return itemService.findOwnerItems(userId);
     }
