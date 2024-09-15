@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.BookingWithoutItemDto;
 
+import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemWithBookingDto {
@@ -14,4 +16,5 @@ public class ItemWithBookingDto {
     boolean available;
     BookingWithoutItemDto lastBooking;
     BookingWithoutItemDto nextBooking;
+    List<CommentDto> comments;
 }

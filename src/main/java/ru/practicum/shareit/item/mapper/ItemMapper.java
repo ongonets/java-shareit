@@ -2,10 +2,13 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingWithoutItemDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.List;
 
 
 @NoArgsConstructor
@@ -30,7 +33,8 @@ public final class ItemMapper {
 
     public static ItemWithBookingDto mapToDto(Item item,
                                               BookingWithoutItemDto lastBooking,
-                                              BookingWithoutItemDto nextBooking) {
+                                              BookingWithoutItemDto nextBooking,
+                                              List<CommentDto> comments) {
         ItemWithBookingDto itemDto = new ItemWithBookingDto();
         itemDto.setId(item.getId());
         itemDto.setName(item.getName());
@@ -38,6 +42,7 @@ public final class ItemMapper {
         itemDto.setAvailable(item.isAvailable());
         itemDto.setLastBooking(lastBooking);
         itemDto.setNextBooking(nextBooking);
+        itemDto.setComments(comments);
         return itemDto;
     }
 }

@@ -31,7 +31,6 @@ public class Item {
 
     private boolean available;
 
-    private List<Comment> comments;
 
     @Override
     public boolean equals(Object object) {
