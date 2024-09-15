@@ -48,7 +48,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemWithBookingDto findItemById(long itemId) {
-        return findLastANdNextBookingAndComments(findItem(itemId));
+        Item item = findItem(itemId);
+        List<CommentDto> comments = findComments(item);
+        return ItemMapper.mapToDto(item, null, null, comments);
     }
 
     @Override
@@ -150,14 +152,18 @@ public class ItemServiceImpl implements ItemService {
         BookingWithoutItemDto nextBooking = bookingRepository.findNextBookings(item, LocalDateTime.now())
                 .map(BookingMapper::mapToDtoWithoutItem)
                 .orElseGet(() -> null);
-        List<CommentDto> comments = commentRepository.findAllByItem(item)
-                .stream()
-                .map(CommentMapper::mapToDto)
-                .toList();
+        List<CommentDto> comments = findComments(item);
         return ItemMapper.mapToDto(item, lastBooking, nextBooking, comments);
     }
 
-    private  void validateComment (User user, Item item, NewCommentRequest commentRequest) {
+    private List<CommentDto> findComments(Item item) {
+        return commentRepository.findAllByItem(item)
+                .stream()
+                .map(CommentMapper::mapToDto)
+                .toList();
+    }
+
+    private  void validateComment(User user, Item item, NewCommentRequest commentRequest) {
         if (bookingRepository
                 .findByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now())
                 .isEmpty())  {

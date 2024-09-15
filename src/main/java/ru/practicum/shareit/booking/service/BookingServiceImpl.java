@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.*;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -15,8 +15,8 @@ import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -133,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private Collection<BookingDto> findBookings (BooleanExpression byBooker, BookingState state) {
+    private Collection<BookingDto> findBookings(BooleanExpression byBooker, BookingState state) {
         Iterable<Booking> foundBooking = new ArrayList<>();
         BooleanExpression byStatus;
         BooleanExpression byDate;

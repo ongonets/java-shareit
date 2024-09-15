@@ -21,7 +21,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Queryds
             "where i = ?1 and b.end < ?2 " +
             "order by b.end desc " +
             "limit 1")
-    Optional<Booking> findLastBookings (Item item, LocalDateTime now);
+    Optional<Booking> findLastBookings(Item item, LocalDateTime now);
 
     @Query("select b " +
             "from Booking as b " +
