@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment,Long> {
 
-    public List<Comment> findAllByItem(Item item);
+    List<Comment> findAllByItem(Item item);
 }
