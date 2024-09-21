@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "items")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @ToString
@@ -18,17 +20,17 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    long id;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    private User user;
+    User user;
 
-    private String name;
+    String name;
 
-    private String description;
+    String description;
 
-    private boolean available;
+    boolean available;
 
 
     @Override
