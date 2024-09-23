@@ -1,9 +1,9 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.dto;
 
 import lombok.AccessLevel;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 
@@ -11,9 +11,8 @@ import java.time.LocalDateTime;
  * TODO Sprint add-bookings.
  */
 @Data
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Booking {
+public class NewBookingRequest {
     long id;
     LocalDateTime start;
     LocalDateTime end;
