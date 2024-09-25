@@ -18,6 +18,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -35,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
     @Override
     public Collection<ItemDto> findByText(String text) {
@@ -65,9 +68,12 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto createItem(long userId, NewItemRequest newItemRequest) {
         User user = findUser(userId);
+        ItemRequest itemRequest = null;
         validateItem(newItemRequest);
-        Item item = ItemMapper.mapToItem(newItemRequest);
-        item.setUser(user);
+        if (newItemRequest.hasRequestId()) {
+            itemRequest = findItemRequest(newItemRequest.getRequestId());
+        }
+        Item item = ItemMapper.mapToItem(newItemRequest, user,itemRequest);
         return ItemMapper.mapToDto(itemRepository.save(item));
     }
 
@@ -174,5 +180,13 @@ public class ItemServiceImpl implements ItemService {
             log.error("Text was entered incorrectly by comment {}", commentRequest);
             throw new ValidationException("Text was entered incorrectly");
         }
+    }
+
+    private ItemRequest findItemRequest(long requestId) {
+        return requestRepository.findById(requestId)
+                .orElseThrow(() -> {
+                    log.error("Not found itemRequest with ID = {}", requestId);
+                    return new NotFoundException(String.format("Not found itemRequest with ID = %d", requestId));
+                });
     }
 }

@@ -13,6 +13,7 @@ public class NewItemRequest {
     String name;
     String description;
     Boolean available;
+    Long requestId;
 
     public boolean hasName() {
         return getName() != null;
@@ -24,5 +25,9 @@ public class NewItemRequest {
 
     public boolean hasAvailable() {
         return getAvailable() != null;
+    }
+
+    public boolean hasRequestId() {
+        return getRequestId() != null;
     }
 }

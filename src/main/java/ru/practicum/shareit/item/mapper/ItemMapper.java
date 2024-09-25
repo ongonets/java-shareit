@@ -4,6 +4,8 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingWithoutItemDto;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -11,11 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 public final class ItemMapper {
 
-    public static Item mapToItem(NewItemRequest newItemRequest) {
+    public static Item mapToItem(NewItemRequest newItemRequest, User user, ItemRequest request) {
         Item item = new Item();
         item.setName(newItemRequest.getName());
         item.setDescription(newItemRequest.getDescription());
         item.setAvailable(newItemRequest.getAvailable());
+        item.setRequest(request);
+        item.setUser(user);
         return item;
     }
 

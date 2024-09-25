@@ -56,7 +56,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public Collection<ItemRequestDto> findAllItemRequests() {
-        return requestRepository.findOrderByCreatedDesc().stream()
+        return requestRepository.findOrderByCreated().stream()
                 .map(ItemRequestMapper::mapToDto)
                 .toList();
     }

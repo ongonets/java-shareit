@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Objects;
@@ -31,6 +32,10 @@ public class Item {
     String description;
 
     boolean available;
+
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    ItemRequest request;
 
 
     @Override
