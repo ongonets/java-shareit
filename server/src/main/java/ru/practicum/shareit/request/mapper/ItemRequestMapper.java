@@ -20,7 +20,7 @@ public class ItemRequestMapper {
         return requestDto;
     }
 
-    public static ItemRequest mapToItemRequest(ItemRequestDto itemRequestDto, User user){
+    public static ItemRequest mapToItemRequest(ItemRequestDto itemRequestDto, User user) {
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setDescription(itemRequestDto.getDescription());
         itemRequest.setRequester(user);
@@ -36,5 +36,4 @@ public class ItemRequestMapper {
         requestDto.setItems(items);
         return requestDto;
     }
-
 }
