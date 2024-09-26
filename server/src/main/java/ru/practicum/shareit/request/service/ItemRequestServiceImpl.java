@@ -30,7 +30,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public ItemRequestDto createItemRequest(long userId, ItemRequestDto newRequest) {
         User user = findUser(userId);
-        validateItemRequest(newRequest);
         ItemRequest itemRequest = ItemRequestMapper.mapToItemRequest(newRequest, user);
         return ItemRequestMapper.mapToDto(requestRepository.save(itemRequest));
     }
@@ -67,13 +66,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     log.error("Not found user with ID = {}", userId);
                     return new NotFoundException(String.format("Not found user with ID = %d", userId));
                 });
-    }
-
-    private void validateItemRequest(ItemRequestDto newRequest) {
-        if (newRequest.getDescription() == null || newRequest.getDescription().isBlank()) {
-            log.error("Description was entered incorrectly by itemRequest {}", newRequest);
-            throw new ValidationException("Description was entered incorrectly");
-        }
     }
 
     private ItemRequestWithItem findItem(ItemRequest itemRequest) {
