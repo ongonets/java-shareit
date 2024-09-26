@@ -42,7 +42,6 @@ public class BookingServiceImpl implements BookingService {
             log.error("Item is not available {}", item);
             throw new ValidationException("Item is not available.");
         }
-        validateBookingDate(bookingRequest);
         Booking booking = BookingMapper.mapToBooking(bookingRequest, item, user);
         booking.setStatus(BookingStatus.WAITING);
         return BookingMapper.mapToDto(bookingRepository.save(booking));
@@ -113,24 +112,6 @@ public class BookingServiceImpl implements BookingService {
                     log.error("Not found booking with ID = {}", bookingId);
                     return new NotFoundException(String.format("Not found booking with ID = %d", bookingId));
                 });
-    }
-
-    private void validateBookingDate(NewBookingRequest bookingRequest) {
-        LocalDateTime start = bookingRequest.getStart();
-        LocalDateTime end = bookingRequest.getEnd();
-        LocalDateTime now = LocalDateTime.now();
-        if (start == null || start.isBefore(now)) {
-            log.error("Start date was entered incorrectly by booking {}", bookingRequest);
-            throw new ValidationException("Start date was entered incorrectly.");
-        }
-        if (end == null || end.isBefore(now)) {
-            log.error("End date was entered incorrectly by booking {}", bookingRequest);
-            throw new ValidationException("End date was entered incorrectly.");
-        }
-        if (start.isEqual(end) || start.isAfter(end)) {
-            log.error("Dates  entered incorrectly by booking {}", bookingRequest);
-            throw new ValidationException("Dates entered incorrectly.");
-        }
     }
 
     private Collection<BookingDto> findBookings(BooleanExpression byBooker, BookingState state) {
