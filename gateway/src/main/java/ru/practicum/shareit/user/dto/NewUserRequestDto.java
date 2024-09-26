@@ -7,8 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewUserRequestDto {
-    @NotNull
+    @NotNull(message = "Name was entered incorrectly")
     String name;
-    @NotNull
+    @NotNull(message = "Email was entered incorrectly")
     String email;
 }

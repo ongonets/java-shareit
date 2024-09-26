@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     private void validateEmail(User user) {
         String email = user.getEmail();
-        if (email == null || !(email.matches("^((?!\\.)[\\w\\-_.]*[^.])(@\\w+)(\\.\\w+(\\.\\w+)?[^.\\W])$"))) {
+        if (!(email.matches("^((?!\\.)[\\w\\-_.]*[^.])(@\\w+)(\\.\\w+(\\.\\w+)?[^.\\W])$"))) {
             log.error("Email was entered incorrectly by user {}", user);
             throw new ValidationException("Email was entered incorrectly");
         }
