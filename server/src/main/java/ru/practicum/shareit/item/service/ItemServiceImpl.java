@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto createComment(long userId, long itemId, NewCommentRequest commentRequest) {
         User user = findUser(userId);
         Item item = findItem(itemId);
-        validateComment(user, item, commentRequest);
+        validateComment(user, item);
         Comment comment = CommentMapper.mapToComment(commentRequest, item, user);
         return CommentMapper.mapToDto(commentRepository.save(comment));
     }
@@ -153,16 +153,12 @@ public class ItemServiceImpl implements ItemService {
                 .toList();
     }
 
-    private  void validateComment(User user, Item item, NewCommentRequest commentRequest) {
+    private  void validateComment(User user, Item item) {
         if (bookingRepository
                 .findByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now())
                 .isEmpty())  {
             log.error("User {} does not booking item {}", user, item);
             throw new ValidationException("User does not booking item");
-        }
-        if (commentRequest.getText() == null || commentRequest.getText().isBlank()) {
-            log.error("Text was entered incorrectly by comment {}", commentRequest);
-            throw new ValidationException("Text was entered incorrectly");
         }
     }
 
