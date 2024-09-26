@@ -69,7 +69,6 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto createItem(long userId, NewItemRequest newItemRequest) {
         User user = findUser(userId);
         ItemRequest itemRequest = null;
-        validateItem(newItemRequest);
         if (newItemRequest.hasRequestId()) {
             itemRequest = findItemRequest(newItemRequest.getRequestId());
         }
@@ -126,21 +125,6 @@ public class ItemServiceImpl implements ItemService {
                     String.format("User with ID = %d does not own item with ID = %d", userId, itemId));
         }
         return item;
-    }
-
-    private void validateItem(NewItemRequest item) {
-        if (item.getName() == null || item.getName().isBlank()) {
-            log.error("Name was entered incorrectly by item {}", item);
-            throw new ValidationException("Name was entered incorrectly");
-        }
-        if (item.getDescription() == null) {
-            log.error("Description was entered incorrectly by item {}", item);
-            throw new ValidationException("Description was entered incorrectly");
-        }
-        if (item.getAvailable() == null) {
-            log.error("Available was entered incorrectly by item {}", item);
-            throw new ValidationException("Available was entered incorrectly");
-        }
     }
 
     private Item findItem(long itemId) {
