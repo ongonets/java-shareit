@@ -136,7 +136,7 @@ class UserServiceImplTest {
 
         Assertions.assertThrows(NoResultException.class,
                 () -> query.setParameter("email", sourceUser.getEmail())
-                .getSingleResult() );
+                .getSingleResult());
 
     }
 }
