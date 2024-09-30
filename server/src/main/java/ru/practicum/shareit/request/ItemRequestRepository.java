@@ -10,7 +10,7 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> 
 
     @Query("select r " +
             "from ItemRequest as r " +
-            "order by date (r.created) desc")
+            "order by r.created desc")
     List<ItemRequest> findOrderByCreated();
 
     List<ItemRequest> findAllByRequesterIdOrderByCreatedDesc(Long ownerId);
