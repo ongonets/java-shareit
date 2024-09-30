@@ -18,7 +18,6 @@ public class BookingMapper {
         booking.setItem(item);
         booking.setStart(bookingDto.getStart());
         booking.setEnd(bookingDto.getEnd());
-        booking.setStatus(bookingDto.getStatus());
         return booking;
     }
 

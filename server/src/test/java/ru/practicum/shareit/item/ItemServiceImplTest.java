@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Import;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.dto.NewCommentRequest;
@@ -182,11 +181,10 @@ class ItemServiceImplTest {
         em.flush();
         long id = entity.getId();
 
-        NewBookingRequest bookingRequest = new NewBookingRequest(0,
+        NewBookingRequest bookingRequest = new NewBookingRequest(
                 LocalDateTime.now().minusDays(2),
                 LocalDateTime.now().minusDays(1),
-                0,
-                BookingStatus.APPROVED);
+                0);
         Booking booking = BookingMapper.mapToBooking(bookingRequest, entity, user);
         em.persist(booking);
         em.flush();
