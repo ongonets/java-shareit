@@ -51,6 +51,14 @@ class BookingServiceImplTest {
         return entity;
     }
 
+    private User getBooker() {
+        NewUserRequest sourceUser = new NewUserRequest("Petr", "petr@mail.ru");
+        User entity = UserMapper.mapToUser(sourceUser);
+        em.persist(entity);
+        em.flush();
+        return entity;
+    }
+
     private Item getItem(User user) {
         NewItemRequest sourceItem = new NewItemRequest("name",
                 "description",
@@ -66,7 +74,7 @@ class BookingServiceImplTest {
         User user = getUser();
         Item item = getItem(user);
 
-        User booker = getUser();
+        User booker = getBooker();
         Booking entity = BookingMapper.mapToBooking(sourceBooking, item, booker);
         entity.setStatus(BookingStatus.WAITING);
         em.persist(entity);
@@ -80,7 +88,7 @@ class BookingServiceImplTest {
         User user = getUser();
         Item item = getItem(user);
 
-        User booker = getUser();
+        User booker = getBooker();
         sourceBooking.setItemId(item.getId());
 
 
